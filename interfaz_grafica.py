@@ -50,12 +50,23 @@ def upload_photo():#Used in take_upload_photo_page()
     lista_reconocimientos = r.reconocer_caras(root_3.filename.name)
     fecha = lista_reconocimientos[0].get("fecha")
     rec =     desg.asig_valores_estados_reconocidos(lista_reconocimientos)
+    """1.Hace falta la parte de enviar los datos al árbol respectivo del curso para su posterior guardado."""
+    """2.Después de enviados los datos, se debe enviar a la página donde se dan las opciones de los reportes."""
+
     """Continue from here"""
 
 def take_photo():#Used in take_upload_photo_page()
+    """This is the function that use the "Take photo" button.
+     It takes a photo and send for its recognition, then save the information (date and recognition values) in variables
+     for it posterior use."""
     cap.cap_foto()
-    print(r.reconocer_caras("fotillo.png"))
+    lista_reconocimientos = r.reconocer_caras("fotillo.png")
+    fecha = lista_reconocimientos[0].get("fecha")
+    rec = desg.asig_valores_estados_reconocidos(lista_reconocimientos)
     remove("fotillo.png")
+    """1.Hace falta la parte de enviar los datos al árbol respectivo del curso para su posterior guardado."""
+    """2.Después de enviados los datos, se debe enviar a la página donde se dan las opciones de los reportes."""
+
     """Keep working in this part..."""
 #____________________________________________________
 #______________Interface______________
