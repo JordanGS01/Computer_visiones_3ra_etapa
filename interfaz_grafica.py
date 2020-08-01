@@ -1,27 +1,26 @@
+from os import remove
+
 from tkinter import *
 from tkinter import Tk
+from tkinter import filedialog
 
-import cap_codigo_qr
-from cap_photo_camera import cap_foto
-
-#from visionAPI import reconocer_caras as reconocimiento
+from Entorno_virtual_3do_proyecto import cap_codigo_qr
+from Entorno_virtual_3do_proyecto import cap_photo_camera as cap
+from Entorno_virtual_3do_proyecto import visionAPI as r
+from Entorno_virtual_3do_proyecto import desgloce_reconocimientos as desg
 #________________Global variables____________________
-#Used in part 1
-global info_qr
+#Used in qr_identification_page()
+global info_qr, cedula, curso, recon
 info_qr = ""
-
-#Used in part 2
-global cedula
-global curso
+#Used in id_modification_page()
 cedula = ""
 curso = ""
-
-#Used in part 3
-global recon
+#Used in take_upload_photo_page()
 recon = None
 
-#______________Functions_____________________________
-def cap_qr():#Used in page 1
+#______________Buttons functions_____________________________
+def cap_qr():#Used in qr_identification_page()
+    """This function is used to capture and identify the information of the QR code in the taken photo."""
     global info_qr
     global root_1
 
@@ -30,24 +29,37 @@ def cap_qr():#Used in page 1
 
     if info_qr != "":
         root_1.destroy()
-        page2()
+        remove("frame.png")
+        id_modification_page()
 
-def change_info_id_cur(ced,cur):#Used in page 2
+def change_info_id_cur(ced,cur):#Used in id_modification_page()
+    """This finction change and save the info of the course and the ID of the student. Finally, it close the window"""
     cedula = ced
     curso = cur
     
     root_2.destroy()
-    page3()
+    take_upload_photo_page()
 
-def upload_photo():#Used in page 3
-    pass
+def upload_photo():#Used in take_upload_photo_page()
+    """Here is where we give the option to upload a photo from the actual device.
+    Then, the information is send to the API of Google to do the face recognition.
+    The information of the recognition (date and recognition values) are saved in variables be send to the binary tree
+    where they are going to be saved."""
 
-def take_photo():#Used in page 3
-    cap_foto()
-    """Por acá quedé, estoy teniendo problemas con la captura y guardado de la imagen para su posterior envio
-    al API de Google"""
+    root_3.filename =  filedialog.askopenfile(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
+    lista_reconocimientos = r.reconocer_caras(root_3.filename.name)
+    fecha = lista_reconocimientos[0].get("fecha")
+    rec =     desg.asig_valores_estados_reconocidos(lista_reconocimientos)
+    """Continue from here"""
+
+def take_photo():#Used in take_upload_photo_page()
+    cap.cap_foto()
+    print(r.reconocer_caras("fotillo.png"))
+    remove("fotillo.png")
+    """Keep working in this part..."""
 #____________________________________________________
-def page1():
+#______________Interface______________
+def qr_identification_page():
     """Here is locate the first page of the program, in where we show the QR code to be identificade."""
 
     global root_1
@@ -66,7 +78,7 @@ def page1():
     boton_cod_qr.grid(row = 0, column = 0)
     root_1.mainloop()
 
-def page2():
+def id_modification_page():
     """The second page is where the user can modify his information (ID)"""
     global cedula
     global curso
@@ -96,7 +108,7 @@ def page2():
     root_2.mainloop()
     exit()#Momentaneo hasta que pasemos a una nueva página
 
-def page3():
+def take_upload_photo_page():
     """In this part is where the system gives to the user the option to upload a photo or take a photo for
     the emotion register."""
     global root_3
@@ -108,7 +120,7 @@ def page3():
     indication.insert(INSERT,"¿Desea subir una foto o tomar una foto para el reporte?")
     indication.grid(row = 0, column = 0, columnspan = 2)
 
-    upload_buttom = Button(root_3, text = "Upload photo")
+    upload_buttom = Button(root_3, text = "Upload photo", command = upload_photo)
     upload_buttom.grid(row = 0, column = 0)
 
     take_buttom = Button(root_3, text = "Take photo", command = take_photo)
@@ -116,5 +128,24 @@ def page3():
 
     root_3.mainloop()
 
-#page1()
-page3()
+def reports_page():
+    """Here is where is create the page that shows the user the avalible report options"""
+    root_4 = Tk()
+    root_4.title("Computer Vision Assistance Register")
+
+    register_for_students_button = Button(root_4, 
+    text = "Registro de asistencia por estudiantes")
+    register_for_students_button.grid(row = 0, column = 0)
+
+    emotion_state_for_course_button = Button(root_4, 
+    text = "Estado de emociones por fecha para un curso")
+    emotion_state_for_course_button.grid(row = 1, column = 0)
+
+    emotions_avarage_for_student_butoon = Button(root_4,
+    text = "Promedio de emociones para un estudiante por curso")
+    emotions_avarage_for_student_butoon.grid(row = 2, column = 0)
+
+    root_4.mainloop()
+
+#qr_identification_page()
+take_upload_photo_page()
