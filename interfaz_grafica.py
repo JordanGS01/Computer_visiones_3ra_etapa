@@ -8,6 +8,7 @@ from Entorno_virtual_3do_proyecto import cap_codigo_qr
 from Entorno_virtual_3do_proyecto import cap_photo_camera as cap
 from Entorno_virtual_3do_proyecto import visionAPI as r
 from Entorno_virtual_3do_proyecto import desgloce_reconocimientos as desg
+from Entorno_virtual_3do_proyecto import tree_class as arbol
 #________________Global variables____________________
 #Used in qr_identification_page()
 global info_qr, cedula, curso, recon
@@ -17,6 +18,7 @@ cedula = ""
 curso = ""
 #Used in take_upload_photo_page()
 recon = None
+
 
 #______________Buttons functions_____________________________
 def cap_qr():#Used in qr_identification_page()
@@ -34,11 +36,18 @@ def cap_qr():#Used in qr_identification_page()
 
 def change_info_id_cur(ced,cur):#Used in id_modification_page()
     """This finction change and save the info of the course and the ID of the student. Finally, it close the window"""
+    global cedula,curso
     cedula = ced
     curso = cur
-    
-    root_2.destroy()
-    take_upload_photo_page()
+    if curso == "Taller52":
+        root_2.destroy()
+        take_upload_photo_page()
+    elif curso == "Intro52":
+        root_2.destroy()
+        take_upload_photo_page()
+    else:
+        print("El curso digitado no se encuentra en los registros, por favor \n"
+              "intente de nuevo con uno que sí exista ('Taller52' o 'Intro52')")
 
 def upload_photo():#Used in take_upload_photo_page()
     """Here is where we give the option to upload a photo from the actual device.
@@ -49,11 +58,11 @@ def upload_photo():#Used in take_upload_photo_page()
     root_3.filename =  filedialog.askopenfile(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
     lista_reconocimientos = r.reconocer_caras(root_3.filename.name)
     fecha = lista_reconocimientos[0].get("fecha")
-    rec =     desg.asig_valores_estados_reconocidos(lista_reconocimientos)
-    """1.Hace falta la parte de enviar los datos al árbol respectivo del curso para su posterior guardado."""
-    """2.Después de enviados los datos, se debe enviar a la página donde se dan las opciones de los reportes."""
+    rec = desg.asig_valores_estados_reconocidos(lista_reconocimientos)
 
-    """Continue from here"""
+    arbol.registrarAsistencia(curso,cedula,fecha,rec)
+    arbol.save_info_archive()
+    reports_page()
 
 def take_photo():#Used in take_upload_photo_page()
     """This is the function that use the "Take photo" button.
@@ -64,10 +73,19 @@ def take_photo():#Used in take_upload_photo_page()
     fecha = lista_reconocimientos[0].get("fecha")
     rec = desg.asig_valores_estados_reconocidos(lista_reconocimientos)
     remove("fotillo.png")
-    """1.Hace falta la parte de enviar los datos al árbol respectivo del curso para su posterior guardado."""
-    """2.Después de enviados los datos, se debe enviar a la página donde se dan las opciones de los reportes."""
 
-    """Keep working in this part..."""
+    arbol.registrarAsistencia(curso,cedula,fecha,rec)
+    arbol.save_info_archive()
+    reports_page()
+#____________________________________________________
+#______________Report functions______________
+def register_assistance_per_student():
+    pass
+def emotions_for_date():
+    pass
+def emotion_avarage_per_student_course():
+    pass
+
 #____________________________________________________
 #______________Interface______________
 def qr_identification_page():
@@ -85,7 +103,7 @@ def qr_identification_page():
     text_bot_qr.grid(row = 0, column = 0, columnspan = 2)
     #___________________Botoms_________________________
 
-    boton_cod_qr = Button(root_1, text = "Press here", command = cap_qr)
+    boton_cod_qr = Button(root_1, text = "Take photo", command = cap_qr)
     boton_cod_qr.grid(row = 0, column = 0)
     root_1.mainloop()
 
@@ -158,5 +176,8 @@ def reports_page():
 
     root_4.mainloop()
 
-#qr_identification_page()
-take_upload_photo_page()
+
+arbol.charge_info_archive()
+print(arbol.listaCursos)
+qr_identification_page()
+#take_upload_photo_page()

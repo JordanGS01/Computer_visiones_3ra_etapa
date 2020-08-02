@@ -1,3 +1,5 @@
+import  pickle
+
 class registroAsistencia():
     """Registro de asistencia
     """
@@ -47,8 +49,8 @@ class asistencia():
             else:
                 self.der.crearRegistroAsistencia(cedula,fecha,emociones)
 
-
-listaCursos={"taller52":None,"intro52":None}
+global listaCursos
+listaCursos={"Taller52":None,"Intro52":None}
 
 
 def registrarAsistencia (curso,cedula,fecha,emociones):
@@ -59,12 +61,20 @@ def registrarAsistencia (curso,cedula,fecha,emociones):
     else:
         raizAsistencia.crearRegistroAsistencia(cedula,fecha,emociones)
 
+def save_info_archive():
+    with open("info_arboles.pickle", "wb") as archi:
+        pickle.dump(listaCursos, archi)
+        archi.close()
 
-registrarAsistencia("taller52",205620727,{"dia":24, "mes":7, "año":2020},{"felicidad":0})
-registrarAsistencia("taller52",205620727,{"dia":31, "mes":7, "año":2020},{"felicidad":5})
-registrarAsistencia("taller52",205620727,{"dia":7, "mes":8, "año":2020},{"felicidad":6})
-registrarAsistencia("taller52",205620726,{"dia":31, "mes":7, "año":2020},{"felicidad":4})
-registrarAsistencia("taller52",205620728,{"dia":31, "mes":7, "año":2020},{"felicidad":3})
-registrarAsistencia("taller52",205620729,{"dia":31, "mes":7, "año":2020},{"felicidad":3})
-registrarAsistencia("taller52",205620727,{"dia":31, "mes":7, "año":2020},{"tristeza":2})
-registrarAsistencia("intro52",205620727,{"dia":31, "mes":7, "año":2020},{"tristeza":2})
+def charge_info_archive():
+    try:
+        global listaCursos
+        archi = open("info_arboles.pickle", "rb")
+        dic_cursos = pickle.load(archi)
+        listaCursos = dic_cursos
+        archi.close()
+    except FileNotFoundError:
+        """If there are no previous registers"""
+        pass
+
+
