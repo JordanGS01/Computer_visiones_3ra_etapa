@@ -44,9 +44,11 @@ def reconocer_caras(url):
             vertices.append (dict (x=vertex.x, y=vertex.y))
 
         hora_actual = datetime.now()
+        dic_hora = {"Hora": hora_actual.hour,"Minutos": hora_actual.minute,"Segundos":hora_actual.second}
+        dic_fecha = {"Día":hora_actual.day,"Mes":hora_actual.month,"Año":hora_actual.year}
+        dic_fecha_hora = {"Fecha": dic_fecha,"Hora": dic_hora}
         face_dict=dict( direccion_foto= url,
-                        fecha = "{0}/{1}/{2}-{3}:{4}:{5}".format(hora_actual.day,hora_actual.month,hora_actual.year,
-                                    hora_actual.hour, hora_actual.minute, hora_actual.second),
+                        fecha = dic_fecha_hora,
                         face_angles=face_angles,
                         detection_confidence=detection_confidence,
                         face_expressions=face_expressions,

@@ -54,6 +54,7 @@ def upload_photo():#Used in take_upload_photo_page()
     Then, the information is send to the API of Google to do the face recognition.
     The information of the recognition (date and recognition values) are saved in variables be send to the binary tree
     where they are going to be saved."""
+    global root_3
 
     root_3.filename =  filedialog.askopenfile(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
     lista_reconocimientos = r.reconocer_caras(root_3.filename.name)
@@ -62,12 +63,14 @@ def upload_photo():#Used in take_upload_photo_page()
 
     arbol.registrarAsistencia(curso,cedula,fecha,rec)
     arbol.save_info_archive()
+    root_3.destroy()
     reports_page()
 
 def take_photo():#Used in take_upload_photo_page()
     """This is the function that use the "Take photo" button.
      It takes a photo and send for its recognition, then save the information (date and recognition values) in variables
      for it posterior use."""
+    global root_3
     cap.cap_foto()
     lista_reconocimientos = r.reconocer_caras("fotillo.png")
     fecha = lista_reconocimientos[0].get("fecha")
@@ -76,6 +79,7 @@ def take_photo():#Used in take_upload_photo_page()
 
     arbol.registrarAsistencia(curso,cedula,fecha,rec)
     arbol.save_info_archive()
+    root_3.destroy()
     reports_page()
 #____________________________________________________
 #______________Report functions______________
@@ -85,7 +89,6 @@ def emotions_for_date():
     pass
 def emotion_avarage_per_student_course():
     pass
-
 #____________________________________________________
 #______________Interface______________
 def qr_identification_page():
@@ -178,6 +181,5 @@ def reports_page():
 
 
 arbol.charge_info_archive()
-print(arbol.listaCursos)
 qr_identification_page()
 #take_upload_photo_page()
